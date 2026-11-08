@@ -6,212 +6,665 @@
 <title>CloudLedger — Expenses</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Sora:wght@400;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --ink: #15202b;
-    --panel: rgba(246, 249, 252, 0.88);
-    --line: rgba(21, 32, 43, 0.12);
-    --teal: #0f8f86;
-    --teal-deep: #0b6e68;
-    --fog: #d9e3ec;
-    --muted: #5d7080;
-    --danger: #c44536;
-    --ok: #1f8a5a;
+    color-scheme: light;
+    --kraft: #E8DFD0;
+    --paper: #F4EFE6;
+    --ink: #1A2332;
+    --steel: #243B55;
+    --copper: #C45C26;
+    --ok: #2F7D4A;
+    --err: #B33A3A;
+    --line: #D4CBBC;
+    --font-ui: "Space Grotesk", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+    --shadow: 0 12px 28px rgba(26, 35, 50, 0.10);
+    --radius: 4px;
   }
+
   * { box-sizing: border-box; }
+
   body {
     margin: 0;
-    color: var(--ink);
-    font-family: "Sora", sans-serif;
-    background:
-      radial-gradient(900px 420px at 8% -10%, rgba(15, 143, 134, 0.16), transparent 55%),
-      radial-gradient(700px 360px at 100% 0%, rgba(93, 112, 128, 0.12), transparent 50%),
-      linear-gradient(165deg, #eef3f7 0%, #e3ebf2 55%, #d7e2eb 100%);
     min-height: 100vh;
+    font-family: var(--font-ui);
+    color: var(--ink);
+    background-color: var(--kraft);
+    background-image:
+      linear-gradient(180deg, rgba(244, 239, 230, 0.72), rgba(232, 223, 208, 0.88)),
+      repeating-linear-gradient(
+        180deg,
+        transparent 0,
+        transparent 27px,
+        rgba(36, 59, 85, 0.045) 27px,
+        rgba(36, 59, 85, 0.045) 28px
+      ),
+      url("./hero-texture.jpg");
+    background-size: auto, auto, cover;
+    background-position: center, center, center;
+    background-attachment: fixed;
   }
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background-image: url("/hero-texture.jpg");
-    background-size: cover;
-    opacity: 0.18;
-    mix-blend-mode: multiply;
-    pointer-events: none;
-    z-index: 0;
-  }
-  .wrap { position: relative; z-index: 1; }
-  header {
+
+  .hidden { display: none !important; }
+
+  /* —— Header / brand-first —— */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 12px;
-    padding: 18px 24px;
-    border-bottom: 1px solid var(--line);
-    backdrop-filter: blur(10px);
-    background: rgba(238, 243, 247, 0.72);
+    gap: 16px;
+    padding: 18px 28px;
+    background: linear-gradient(180deg, var(--steel) 0%, #1c2f45 100%);
+    color: var(--paper);
+    border-bottom: 3px solid var(--copper);
+    box-shadow: 0 8px 24px rgba(26, 35, 50, 0.22);
   }
-  header h1 {
+
+  .brand {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .brand-mark {
     margin: 0;
-    font-size: 1.35rem;
-    letter-spacing: -0.03em;
+    font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    text-transform: none;
   }
-  header h1 span { color: var(--teal); }
-  header .user { display: flex; align-items: center; gap: 12px; font-size: 14px; }
-  main { max-width: 980px; margin: 28px auto; padding: 0 16px 48px; }
-  .hero {
-    margin-bottom: 18px;
-    animation: rise 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  .brand-underline {
+    display: block;
+    height: 2px;
+    width: 0;
+    background: var(--copper);
+    animation: underlineGrow 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards;
   }
-  .hero p {
-    margin: 8px 0 0;
-    color: var(--muted);
-    max-width: 42rem;
-    line-height: 1.55;
-  }
-  .eyebrow {
-    font-family: "JetBrains Mono", monospace;
-    font-size: 11px;
-    letter-spacing: 0.22em;
+
+  .brand-tag {
+    margin: 0;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--teal-deep);
+    color: rgba(244, 239, 230, 0.72);
   }
+
+  .user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.9rem;
+    font-family: var(--font-mono);
+  }
+
+  .user span {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* —— Layout —— */
+  main {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 28px 16px 48px;
+  }
+
   .panel {
-    background: var(--panel);
+    background: var(--paper);
     border: 1px solid var(--line);
-    padding: 22px;
-    margin-bottom: 16px;
-    backdrop-filter: blur(8px);
-    animation: rise 720ms 60ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 22px 22px 20px;
+    margin-bottom: 18px;
+    position: relative;
   }
-  h2 { margin: 0 0 12px; font-size: 1.15rem; letter-spacing: -0.02em; }
-  input, select, button {
-    padding: 10px 12px;
-    border: 1px solid var(--line);
-    border-radius: 0;
-    font-size: 14px;
-    font-family: inherit;
-    background: #fff;
+
+  .panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    background-image:
+      radial-gradient(rgba(26, 35, 50, 0.05) 0.6px, transparent 0.7px);
+    background-size: 3px 3px;
+    border-radius: inherit;
+  }
+
+  .panel > * { position: relative; }
+
+  #appCard {
+    animation: fadeIn 0.45s ease both;
+  }
+
+  #authCard {
+    max-width: 520px;
+    margin: 48px auto 0;
+    padding: 28px 28px 24px;
+    animation: fadeIn 0.4s ease both;
+  }
+
+  .panel-kicker {
+    margin: 0 0 6px;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--steel);
+    font-weight: 600;
+  }
+
+  .panel-title {
+    margin: 0 0 8px;
+    font-size: 1.45rem;
+    font-weight: 700;
     color: var(--ink);
   }
-  button {
-    background: var(--teal);
-    color: #f4fffd;
-    border: none;
-    cursor: pointer;
-    font-weight: 650;
-    min-height: 44px;
-    transition: transform 160ms ease, background 160ms ease;
+
+  .panel-lead {
+    margin: 0 0 18px;
   }
-  button:hover { background: var(--teal-deep); transform: translateY(-1px); }
-  button:disabled { opacity: .55; cursor: not-allowed; transform: none; }
-  button.secondary { background: #415564; }
-  button.danger { background: var(--danger); }
-  table { width: 100%; border-collapse: collapse; }
-  th, td {
-    padding: 10px 8px;
-    border-bottom: 1px solid var(--line);
+
+  .section-label {
+    margin: 26px 0 10px;
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--steel);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  .section-label:first-of-type { margin-top: 0; }
+
+  .muted { color: #5a6472; font-size: 0.875rem; }
+  .error { color: var(--err); font-size: 0.875rem; }
+  .success { color: var(--ok); font-size: 0.875rem; }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.82em;
+    background: rgba(36, 59, 85, 0.06);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  .row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  /* —— Controls —— */
+  input, select, button {
+    font-family: var(--font-ui);
+    font-size: 0.9rem;
+    padding: 9px 11px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fffdf8;
+    color: var(--ink);
+  }
+
+  input:focus, select:focus, button:focus-visible {
+    outline: 2px solid rgba(196, 92, 38, 0.45);
+    outline-offset: 1px;
+  }
+
+  input[type="file"] {
+    font-size: 0.8rem;
+    max-width: 100%;
+  }
+
+  button {
+    background: var(--steel);
+    color: var(--paper);
+    border-color: var(--steel);
+    cursor: pointer;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: transform 0.12s ease, background 0.15s ease, opacity 0.15s ease;
+  }
+
+  button:hover:not(:disabled) { background: #1c3148; }
+  button:active:not(:disabled) { transform: scale(0.97); }
+  button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+  button.secondary {
+    background: transparent;
+    color: var(--steel);
+    border-color: var(--steel);
+  }
+
+  button.secondary:hover:not(:disabled) {
+    background: rgba(36, 59, 85, 0.08);
+  }
+
+  .site-header button.secondary {
+    color: var(--paper);
+    border-color: rgba(244, 239, 230, 0.45);
+    background: transparent;
+  }
+
+  .site-header button.secondary:hover:not(:disabled) {
+    background: rgba(244, 239, 230, 0.1);
+  }
+
+  button.danger {
+    background: var(--err);
+    border-color: var(--err);
+    color: #fff;
+  }
+
+  button.danger:hover:not(:disabled) { background: #9a3030; }
+
+  /* —— Auth panel —— */
+  .auth-compose {
+    display: grid;
+    gap: 12px;
+  }
+
+  .auth-compose .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .auth-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .auth-actions button { min-width: 110px; }
+
+  /* —— Expense toolbar —— */
+  .expense-toolbar {
+    display: grid;
+    grid-template-columns: 110px 1.1fr 140px 1.4fr minmax(140px, 1.2fr) auto;
+    gap: 8px;
+    align-items: center;
+    padding: 10px;
+    background: rgba(232, 223, 208, 0.55);
+    border: 1px dashed var(--line);
+    border-radius: var(--radius);
+  }
+
+  .expense-toolbar input[type="number"],
+  .expense-toolbar input[type="date"],
+  .expense-toolbar select {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+  }
+
+  #createMsg { margin: 8px 0 0; min-height: 1.2em; }
+
+  /* —— Receipt summary strip —— */
+  .receipt-strip {
+    --tooth-w: 12px;
+    --tooth-h: 12px;
+    margin-top: 4px;
+    padding: 4px 0 10px;
+  }
+
+  .receipt-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .receipt-controls label {
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--steel);
+    font-weight: 600;
+  }
+
+  .receipt-paper {
+    --tooth-w: 12px;
+    --tooth-h: 12px;
+    position: relative;
+    max-width: 420px;
+    margin: 0 auto 0 0;
+    background: #fffdf8;
+    color: var(--ink);
+    border-left: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+    padding: 22px 22px 18px;
+    font-family: var(--font-mono);
+    box-shadow: 0 10px 18px rgba(26, 35, 50, 0.08);
+    mask-image:
+      linear-gradient(135deg, transparent 50%, #000 0),
+      linear-gradient(-135deg, transparent 50%, #000 0),
+      linear-gradient(#000, #000),
+      linear-gradient(135deg, #000 50%, transparent 0),
+      linear-gradient(-135deg, #000 50%, transparent 0);
+    mask-size:
+      var(--tooth-w) var(--tooth-h),
+      var(--tooth-w) var(--tooth-h),
+      100% calc(100% - var(--tooth-h)),
+      var(--tooth-w) var(--tooth-h),
+      var(--tooth-w) var(--tooth-h);
+    mask-position: 0 0, 0 0, 0 calc(var(--tooth-h) / 2), 0 100%, 0 100%;
+    mask-repeat: repeat-x, repeat-x, no-repeat, repeat-x, repeat-x;
+    -webkit-mask-image:
+      linear-gradient(135deg, transparent 50%, #000 0),
+      linear-gradient(-135deg, transparent 50%, #000 0),
+      linear-gradient(#000, #000),
+      linear-gradient(135deg, #000 50%, transparent 0),
+      linear-gradient(-135deg, #000 50%, transparent 0);
+    -webkit-mask-size:
+      var(--tooth-w) var(--tooth-h),
+      var(--tooth-w) var(--tooth-h),
+      100% calc(100% - var(--tooth-h)),
+      var(--tooth-w) var(--tooth-h),
+      var(--tooth-w) var(--tooth-h);
+    -webkit-mask-position: 0 0, 0 0, 0 calc(var(--tooth-h) / 2), 0 100%, 0 100%;
+    -webkit-mask-repeat: repeat-x, repeat-x, no-repeat, repeat-x, repeat-x;
+    background-image:
+      repeating-linear-gradient(
+        180deg,
+        rgba(26, 35, 50, 0.04) 0 1px,
+        transparent 1px 4px
+      );
+  }
+
+  .receipt-paper::before {
+    content: "CLOUDLEDGER · MONTHLY TALLY";
+    display: block;
+    text-align: center;
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--steel);
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  #summary {
+    font-size: 0.86rem;
+  }
+
+  #summary p {
+    margin: 0 0 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed rgba(36, 59, 85, 0.28);
+  }
+
+  #summary p strong {
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+  }
+
+  #summary ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  #summary li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 4px 0;
+    border-bottom: 1px dotted rgba(36, 59, 85, 0.18);
+  }
+
+  #summary .empty,
+  #summary .muted,
+  #summary .error {
+    font-family: var(--font-ui);
+    text-align: center;
+    border: none;
+    padding: 12px 4px;
+  }
+
+  /* —— Table —— */
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: #fffdf8;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 640px;
+  }
+
+  thead th {
     text-align: left;
-    font-size: 14px;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--steel);
+    background: rgba(232, 223, 208, 0.65);
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+    font-weight: 600;
+  }
+
+  tbody td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.875rem;
     vertical-align: middle;
   }
-  th {
-    font-family: "JetBrains Mono", monospace;
-    font-size: 11px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--muted);
+
+  tbody tr {
+    transition: background 0.15s ease, transform 0.15s ease;
   }
-  .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-  .hidden { display: none; }
-  .error { color: var(--danger); font-size: 13px; }
-  .success { color: var(--ok); font-size: 13px; }
-  .muted { color: var(--muted); font-size: 13px; }
-  .status { display: flex; gap: 6px; align-items: center; }
+
+  tbody tr:hover {
+    background: rgba(196, 92, 38, 0.06);
+    transform: translateX(3px);
+  }
+
+  tbody td:nth-child(1),
+  tbody td:nth-child(3) {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.82rem;
+  }
+
+  tbody td:nth-child(3) {
+    font-weight: 600;
+    color: var(--steel);
+  }
+
+  .status {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .statusSelect {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    padding: 5px 8px;
+  }
+
+  a.dl {
+    color: var(--copper);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+  }
+
+  a.dl:hover { border-bottom-color: var(--copper); }
+
   .empty {
-    padding: 24px;
+    padding: 22px;
     text-align: center;
-    color: var(--muted);
-    background: rgba(255,255,255,0.55);
+    color: #5a6472;
+    background: rgba(232, 223, 208, 0.4);
     border: 1px dashed var(--line);
+    border-radius: var(--radius);
   }
+
+  #expensesState {
+    margin-bottom: 8px;
+    min-height: 1.2em;
+  }
+
   .spinner {
     display: inline-block;
     width: 14px;
     height: 14px;
-    border: 2px solid #cbd5e1;
-    border-top-color: var(--teal);
+    border: 2px solid var(--line);
+    border-top-color: var(--copper);
     border-radius: 50%;
-    animation: spin .7s linear infinite;
+    animation: spin 0.7s linear infinite;
     vertical-align: middle;
     margin-right: 6px;
   }
-  .mono { font-family: "JetBrains Mono", monospace; }
+
   @keyframes spin { to { transform: rotate(360deg); } }
-  @keyframes rise {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
   }
+
+  @keyframes underlineGrow {
+    from { width: 0; }
+    to { width: 100%; max-width: 168px; }
+  }
+
+  @media (max-width: 900px) {
+    .expense-toolbar {
+      grid-template-columns: 1fr 1fr;
+    }
+    .expense-toolbar #description,
+    .expense-toolbar #receipt,
+    .expense-toolbar #createBtn {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .site-header {
+      padding: 14px 16px;
+      flex-wrap: wrap;
+    }
+
+    #authCard {
+      margin-top: 24px;
+      padding: 20px 16px;
+    }
+
+    .auth-compose .row {
+      grid-template-columns: 1fr;
+    }
+
+    .expense-toolbar {
+      grid-template-columns: 1fr;
+    }
+
+    .receipt-paper {
+      max-width: none;
+    }
+
+    .user span { max-width: 140px; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .hero, .panel, .spinner { animation: none !important; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    .brand-underline { width: 100%; max-width: 168px; }
+    tbody tr:hover { transform: none; }
   }
 </style>
 </head>
 <body>
-<div class="wrap">
-<header>
-  <h1>Cloud<span>Ledger</span></h1>
+<header class="site-header">
+  <div class="brand">
+    <h1 class="brand-mark">CloudLedger</h1>
+    <span class="brand-underline" aria-hidden="true"></span>
+    <p class="brand-tag">Workshop expense ledger</p>
+  </div>
   <div id="authStatus" class="user"></div>
 </header>
 <main>
-  <section class="hero">
-    <div class="eyebrow">Expense control</div>
-    <h2 style="font-size:2rem;margin:10px 0 0;letter-spacing:-0.04em;">CloudLedger</h2>
-    <p>Track receipts, status, and monthly spend without a generic SaaS look — cool concrete surfaces with teal signal accents.</p>
-  </section>
-
   <section id="authCard" class="panel">
-    <h2>Sign in</h2>
-    <p class="muted">Local demo: <code class="mono">demo@cloudledger.dev</code> / <code class="mono">Password123!</code></p>
-    <div class="row">
-      <input id="email" type="email" placeholder="email" autocomplete="username" />
-      <input id="password" type="password" placeholder="password" autocomplete="current-password" />
-      <button id="loginBtn" type="button">Login</button>
-      <button id="registerBtn" class="secondary" type="button">Register</button>
+    <p class="panel-kicker">Access</p>
+    <h2 class="panel-title">Sign in</h2>
+    <p class="muted panel-lead">Local demo: <code>demo@cloudledger.dev</code> / <code>Password123!</code></p>
+    <div class="auth-compose">
+      <div class="row">
+        <input id="email" type="email" placeholder="email" autocomplete="username" />
+        <input id="password" type="password" placeholder="password" autocomplete="current-password" />
+      </div>
+      <div class="auth-actions">
+        <button id="loginBtn" type="button">Login</button>
+        <button id="registerBtn" class="secondary" type="button">Register</button>
+      </div>
     </div>
     <p id="authMsg" class="error"></p>
   </section>
 
   <section id="appCard" class="panel hidden">
-    <h2>New expense</h2>
-    <div class="row">
-      <input id="amount" type="number" step="0.01" placeholder="amount" />
-      <select id="category"></select>
-      <input id="date" type="date" />
-      <input id="description" placeholder="description" />
-      <input id="receipt" type="file" accept="application/pdf,image/jpeg,image/png" />
+    <p class="section-label">New expense</p>
+    <div class="row expense-toolbar">
+      <input id="amount" type="number" step="0.01" placeholder="amount" aria-label="Amount" />
+      <select id="category" aria-label="Category"></select>
+      <input id="date" type="date" aria-label="Date" />
+      <input id="description" placeholder="description" aria-label="Description" />
+      <input id="receipt" type="file" accept="application/pdf,image/jpeg,image/png" aria-label="Receipt file" />
       <button id="createBtn" type="button">Create</button>
     </div>
     <p id="createMsg"></p>
 
-    <h2 style="margin-top:24px">Summary</h2>
-    <div class="row" style="margin-bottom:8px">
-      <label for="summaryMonth" class="muted">Month</label>
-      <input id="summaryMonth" type="month" />
-      <button id="summaryBtn" class="secondary" type="button">Refresh</button>
+    <p class="section-label">Summary</p>
+    <div class="receipt-strip">
+      <div class="receipt-controls">
+        <label for="summaryMonth">Month</label>
+        <input id="summaryMonth" type="month" />
+        <button id="summaryBtn" class="secondary" type="button">Refresh</button>
+      </div>
+      <div class="receipt-paper">
+        <div id="summary"><p class="muted"><span class="spinner"></span>Loading summary…</p></div>
+      </div>
     </div>
-    <div id="summary"><p class="muted"><span class="spinner"></span>Loading summary…</p></div>
 
-    <h2 style="margin-top:24px">Expenses</h2>
-    <div id="expensesState" class="muted" style="margin-bottom:8px"></div>
-    <table>
-      <thead><tr><th>Date</th><th>Category</th><th>Amount</th><th>Status</th><th>Receipt</th><th></th></tr></thead>
-      <tbody id="expensesBody"></tbody>
-    </table>
+    <p class="section-label">Expenses</p>
+    <div id="expensesState" class="muted"></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Date</th><th>Category</th><th>Amount</th><th>Status</th><th>Receipt</th><th></th></tr></thead>
+        <tbody id="expensesBody"></tbody>
+      </table>
+    </div>
   </section>
 </main>
-</div>
 <script>
 const API = '';
 let token = localStorage.getItem('cl_token');
@@ -278,7 +731,7 @@ function renderAuth() {
   if (token) {
     authCard.classList.add('hidden');
     appCard.classList.remove('hidden');
-    authStatus.innerHTML = `<span class="mono">${emailHint || 'Signed in'}</span><button id="logoutBtn" class="secondary" type="button">Log out</button>`;
+    authStatus.innerHTML = `<span>${emailHint || 'Signed in'}</span><button id="logoutBtn" class="secondary" type="button">Log out</button>`;
     document.getElementById('logoutBtn').onclick = logout;
     loadAll();
   } else {
@@ -346,9 +799,9 @@ async function loadExpenses() {
       .map(
         (e) => `
     <tr>
-      <td class="mono">${e.expenseDate}</td>
+      <td>${e.expenseDate}</td>
       <td>${e.category}</td>
-      <td class="mono">${Number(e.amount).toFixed(2)}</td>
+      <td>${Number(e.amount).toFixed(2)}</td>
       <td>
         <div class="status">
           <select data-id="${e.id}" class="statusSelect" aria-label="Status">
@@ -427,8 +880,8 @@ async function loadSummary() {
       summaryEl.innerHTML = `<div class="empty">No expenses in <strong>${s.month}</strong>.</div>`;
       return;
     }
-    summaryEl.innerHTML = `<p><strong>Total ${s.month}:</strong> <span class="mono">${Number(s.total).toFixed(2)}</span></p><ul>${s.byCategory
-      .map((c) => `<li>${c.category}: <span class="mono">${Number(c.total).toFixed(2)}</span> (${c.count})</li>`)
+    summaryEl.innerHTML = `<p><strong>Total ${s.month}:</strong> ${Number(s.total).toFixed(2)}</p><ul>${s.byCategory
+      .map((c) => `<li><span>${c.category}</span><span>${Number(c.total).toFixed(2)} (${c.count})</span></li>`)
       .join('')}</ul>`;
   } catch (err) {
     summaryEl.innerHTML = `<p class="error">${err.message}</p>`;

@@ -23,6 +23,7 @@
 - [🔍 Overview](#-overview)
 - [📌 Project Status](#-project-status)
 - [✨ Key Features](#-key-features)
+- [🎨 UI Design System](#-ui-design-system)
 - [💰 Cost \& Free Tier](#-cost--free-tier)
 - [🏗️ System Architecture](#️-system-architecture)
 - [🔄 Request Flow](#-request-flow)
@@ -88,6 +89,29 @@ This README is the **target architecture** (what the finished project looks like
 | 🔐 **Least-privilege IAM** | Receipts policy scoped to `s3:…` on `receipts/*`; ECS roles exist only on the paid stack |
 | 🔑 **Secrets** | `.env` locally; SSM Parameter Store if you apply Terraform |
 | 💰 **$0 default** | No NAT, no ALB, no Fargate, no RDS unless `enable_paid_stack = true` |
+
+---
+
+## 🎨 UI Design System
+
+Local demo UI lives in [`public/index.html`](./public/index.html) (served at **http://localhost:4000** when the API is running). Atmosphere is a warm workshop ledger — kraft paper, steel, and copper — not a generic cream/terracotta look.
+
+| Token | Value | Use |
+|---|---|---|
+| `--kraft` | `#E8DFD0` | Page ground |
+| `--paper` | `#F4EFE6` | Panels / surfaces |
+| `--ink` | `#1A2332` | Body text |
+| `--steel` | `#243B55` | Header, primary actions |
+| `--copper` | `#C45C26` | Accent underline / links |
+| `--ok` | `#2F7D4A` | Success |
+| `--err` | `#B33A3A` | Errors / delete |
+| `--line` | `#D4CBBC` | Borders / rules |
+
+**Fonts:** [Space Grotesk](https://fonts.google.com/specimen/Space+Grotesk) (brand + UI) and [IBM Plex Mono](https://fonts.google.com/specimen/IBM+Plex+Mono) (amounts, dates, receipt strip).
+
+**Layout notes:** brand-first steel header with CloudLedger wordmark; auth as a composed panel; expense create as a dense toolbar; monthly summary as a serrated thermal-receipt strip; dense expense table with mono amounts. Motion is CSS-only (app fade-in, header underline grow, button press scale, row hover slide).
+
+**Live URL:** local demo at [http://localhost:4000](http://localhost:4000) — no production deploy URL yet (free MVP runs on your machine).
 
 ---
 
