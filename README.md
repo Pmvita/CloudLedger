@@ -94,22 +94,22 @@ This README is the **target architecture** (what the finished project looks like
 
 ## 🎨 UI Design System
 
-Local demo UI lives in [`public/index.html`](./public/index.html) (served at **http://localhost:4000** when the API is running). Atmosphere is a cool concrete ledger — fog blue paper, steel ink, and teal signal accents (not cream/terracotta).
+Local demo UI lives in [`public/index.html`](./public/index.html) (served at **http://localhost:4000** when the API is running). Atmosphere is a warm workshop ledger — kraft paper, steel, and copper (not cream/terracotta, not cool teal).
 
 | Token | Value | Use |
 |---|---|---|
-| `--kraft` | `#d9e3ec` | Page ground |
-| `--paper` | `#f3f7fa` | Panels / surfaces |
-| `--ink` | `#15202b` | Body text |
-| `--steel` | `#1c3344` | Header, primary actions |
-| `--copper` | `#0f8f86` | Teal accent underline / links |
-| `--ok` | `#1f8a5a` | Success |
-| `--err` | `#c44536` | Errors / delete |
-| `--line` | `#c5d2de` | Borders / rules |
+| `--kraft` | `#E8DFD0` | Page ground |
+| `--paper` | `#F4EFE6` | Panels / surfaces |
+| `--ink` | `#1A2332` | Body text |
+| `--steel` | `#243B55` | Header, primary actions |
+| `--copper` | `#C45C26` | Accent underline / links |
+| `--ok` | `#2F7D4A` | Success |
+| `--err` | `#B33A3A` | Errors / delete |
+| `--line` | `#D4CBBC` | Borders / rules |
 
 **Fonts:** [Space Grotesk](https://fonts.google.com/specimen/Space+Grotesk) (brand + UI) and [IBM Plex Mono](https://fonts.google.com/specimen/IBM+Plex+Mono) (amounts, dates, receipt strip).
 
-**Layout notes:** brand-first steel header with CloudLedger wordmark; auth as a composed panel; expense create as a dense toolbar; monthly summary as a serrated thermal-receipt strip; dense expense table with mono amounts. Motion is CSS-only (app fade-in, header underline grow, button press scale, row hover slide).
+**Layout notes:** brand-first steel header with CloudLedger mark + wordmark; auth as a composed panel; expense create as a dense toolbar; monthly summary as a serrated thermal-receipt strip; dense expense table with mono amounts. Motion is CSS-only (app fade-in, seal in, header underline grow, button press scale, row hover slide).
 
 **Live URL:** https://cloudledger-coral.vercel.app
 
