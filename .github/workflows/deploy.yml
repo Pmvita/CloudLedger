@@ -1,0 +1,50 @@
+name: Deploy
+
+# Paid stack only (ECR + ECS). The free build does not use this workflow.
+# Set GitHub Actions variable ENABLE_PAID_STACK=true before a dispatch.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    if: ${{ vars.ENABLE_PAID_STACK == 'true' }}
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: us-east-1
+      ECS_CLUSTER: cloudledger
+      ECS_SERVICE: cloudledger-api
+      ECR_REPOSITORY: cloudledger-api
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: aws-actions/amazon-ecr-login@v2
+        id: login-ecr
+
+      - name: Build and push
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker build -t "$ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_SHA}" -t "$ECR_REGISTRY/$ECR_REPOSITORY:latest" .
+          docker push "$ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_SHA}"
+          docker push "$ECR_REGISTRY/$ECR_REPOSITORY:latest"
+
+      - name: Rolling ECS deploy
+        run: |
+          aws ecs update-service \
+            --cluster "$ECS_CLUSTER" \
+            --service "$ECS_SERVICE" \
+            --force-new-deployment
+
+      # Rollback: aws ecs update-service --cluster cloudledger --service cloudledger-api \
+      #   --task-definition cloudledger-api:<previous-revision>
+      # Idle lab: terraform destroy. Never leave ALB + ECS + RDS up.

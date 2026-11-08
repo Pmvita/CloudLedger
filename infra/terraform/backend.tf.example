@@ -1,0 +1,10 @@
+# Copy to backend.tf and fill in after you create the state bucket + lock table.
+# terraform {
+#   backend "s3" {
+#     bucket         = "your-tf-state-bucket"
+#     key            = "cloudledger/terraform.tfstate"
+#     region         = "us-east-1"
+#     dynamodb_table = "your-tf-lock-table"
+#     encrypt        = true
+#   }
+# }

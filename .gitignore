@@ -1,0 +1,23 @@
+node_modules/
+dist/
+coverage/
+.env
+.env.local
+*.log
+
+# Terraform
+infra/terraform/.terraform/
+infra/terraform/*.tfstate
+infra/terraform/*.tfstate.*
+infra/terraform/*.tfvars
+infra/terraform/crash.log
+infra/terraform/override.tf
+infra/terraform/override.tf.json
+infra/terraform/*_override.tf
+infra/terraform/*_override.tf.json
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

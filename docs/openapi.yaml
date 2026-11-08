@@ -1,0 +1,218 @@
+openapi: 3.0.3
+info:
+  title: CloudLedger API
+  version: 1.0.0
+  description: Expense tracking REST API (MVP).
+servers:
+  - url: /
+paths:
+  /health:
+    get:
+      summary: Load balancer health check
+      responses:
+        "200":
+          description: Process is up
+  /api/auth/register:
+    post:
+      summary: Create a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        "201":
+          description: User created
+        "409":
+          description: Email already registered
+  /api/auth/login:
+    post:
+      summary: Return a JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: JWT issued
+        "401":
+          description: Invalid credentials
+  /api/categories:
+    get:
+      summary: List seeded categories
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Category list
+  /api/expenses:
+    get:
+      summary: List expenses for the caller
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: categoryId
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [pending, approved, reimbursed]
+        - in: query
+          name: from
+          schema:
+            type: string
+            format: date
+        - in: query
+          name: to
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Expense list
+    post:
+      summary: Create an expense; optional multipart receipt is stored with S3 PutObject
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CreateExpense"
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateExpense"
+      responses:
+        "201":
+          description: Created
+  /api/expenses/{id}:
+    get:
+      summary: Expense plus receipt metadata
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ExpenseId"
+      responses:
+        "200":
+          description: Expense
+        "404":
+          description: Not found
+    patch:
+      summary: Update status
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ExpenseId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateStatus"
+      responses:
+        "200":
+          description: Updated
+    delete:
+      summary: Delete expense and receipt object
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ExpenseId"
+      responses:
+        "204":
+          description: Deleted
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    ExpenseId:
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+        format: uuid
+  schemas:
+    RegisterRequest:
+      type: object
+      required: [email, password, fullName]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        fullName:
+          type: string
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    CreateExpense:
+      type: object
+      required: [amount, categoryId, expenseDate]
+      properties:
+        amount:
+          type: number
+        categoryId:
+          type: string
+          format: uuid
+        description:
+          type: string
+        expenseDate:
+          type: string
+          format: date
+        receipt:
+          type: string
+          format: binary
+    UpdateStatus:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [pending, approved, reimbursed]
+    Expense:
+      type: object
+      properties:
+        id:
+          type: string
+        amount:
+          type: number
+          example: 128.5
+        category:
+          type: string
+          example: Travel
+        description:
+          type: string
+        expenseDate:
+          type: string
+          format: date
+        status:
+          type: string
+        receipt:
+          type: object
+          nullable: true
+          properties:
+            s3ObjectKey:
+              type: string
+            fileType:
+              type: string
+            fileSizeBytes:
+              type: integer

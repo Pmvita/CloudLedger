@@ -1,0 +1,9 @@
+node_modules
+.git
+.env
+coverage
+dist
+infra/terraform/.terraform
+infra/terraform/*.tfstate*
+*.md
+.github
