@@ -20,9 +20,9 @@ If a feature is listed under [Future / Roadmap](#️-future--roadmap-post-mvp), 
 - [x] Default architecture is local-only (no AWS bill)
 - [x] Terraform paid resources gated on `enable_paid_stack` (default `false`)
 - [x] Budget default is $5, not $15
-- [ ] Create an AWS Budget + email alert **before** any `terraform apply`
-- [ ] Do **not** set `enable_paid_stack = true` for this build
-- [ ] Do **not** create a NAT Gateway, Secrets Manager secret, ALB, Fargate service, or RDS instance
+- [ ] Create an AWS Budget + email alert **before** any `terraform apply` *(pending AWS credentials)*
+- [x] Do **not** set `enable_paid_stack = true` for this build *(policy held — flag stays false)*
+- [x] Do **not** create a NAT Gateway, Secrets Manager secret, ALB, Fargate service, or RDS instance *(not applied)*
 
 ---
 
@@ -43,7 +43,7 @@ If a feature is listed under [Future / Roadmap](#️-future--roadmap-post-mvp), 
 - [x] Add indexes on `expenses(user_id)`, `expenses(category_id)`, `expenses(expense_date)`
 - [x] Seed categories (no create-category API in MVP)
 - [x] Seed a sample user + expenses for local testing
-- [ ] Run migrate + seed against local Compose Postgres
+- [x] Run migrate + seed against local Compose Postgres *(2026-11-08: `docker compose up -d` Postgres-only → migrate + seed OK)*
 
 RDS is **not** in the free MVP. It is behind `enable_paid_stack`.
 
@@ -66,18 +66,21 @@ RDS is **not** in the free MVP. It is behind `enable_paid_stack`.
 
 ## 📦 File storage
 
-- [x] Local MinIO in Docker Compose (S3 API)
+- [x] Local MinIO in Docker Compose (S3 API) — **optional profile `minio`** (registry pulls often denied; Postgres-only is the default free path)
 - [x] Implement `PutObject` / `GetObject` helpers in the API
 - [x] On expense delete, delete the matching object
-- [ ] Optional Terraform: receipts bucket, block public access, gateway endpoint, 90-day lifecycle (`enable_paid_stack = false` still creates these — S3 at lab volume is $0)
+- [x] Optional Terraform code: receipts bucket, block public access, gateway endpoint, 90-day lifecycle (`enable_paid_stack = false` still creates these — S3 at lab volume is $0)
+- [ ] Optional free Terraform **apply** *(pending AWS credentials + $5 budget alert — do not apply without both)*
+- [ ] Start MinIO profile when registry auth allows (`docker compose --profile minio up -d`)
 
 ---
 
 ## 🐳 Containerization
 
 - [x] Multi-stage production `Dockerfile`
-- [ ] Test locally with `docker compose` / `docker run`
-- [ ] Do **not** push to ECR on the free build (ECR is paid-stack)
+- [x] Test locally with `docker compose` *(Postgres-only smoke 2026-11-08; MinIO profile blocked by registry deny)*
+- [ ] Full `docker compose --profile minio` / `docker run` API image smoke *(optional; registry/MinIO pending)*
+- [x] Do **not** push to ECR on the free build (ECR is paid-stack)
 
 ---
 
@@ -93,7 +96,7 @@ Free stack (default, `$0`):
 Paid stack (do not apply):
 
 - [x] Code exists for ECS Fargate + ALB + RDS + ECR + autoscaling
-- [ ] Leave it un-applied
+- [x] Leave it un-applied
 
 ---
 

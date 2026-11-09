@@ -53,12 +53,14 @@
 
 This README is the **target architecture** (what the finished project looks like). Build progress lives in [`TODO.md`](./TODO.md). Do not treat unchecked TODO items as already deployed.
 
+**Vercel = static demo UI only** (`public/index.html`). The API, Postgres, and MinIO run locally via Docker Compose / `npm run dev` — there is no hosted API on Vercel.
+
 **MVP (free — this is the first build):**
 
 - Auth (`register` / `login`) + expense CRUD + category list
 - Receipt upload **through the API** (`POST /api/expenses` multipart → S3 `PutObject`, or MinIO locally)
 - Local Postgres + MinIO via Docker Compose
-- Terraform **free stack**: VPC, S3 (block public + lifecycle), S3 gateway endpoint, IAM receipts policy, SSM `JWT_SECRET`, $5 budget
+- Terraform **free stack** (optional, needs AWS creds + budget email first): VPC, S3 (block public + lifecycle), S3 gateway endpoint, IAM receipts policy, SSM `JWT_SECRET`, $5 budget — skip `apply` if credentials are missing
 - `enable_paid_stack = false` (default)
 
 **Paid opt-in (not part of the free build — `enable_paid_stack = true`):**
@@ -111,7 +113,7 @@ Local demo UI lives in [`public/index.html`](./public/index.html) (served at **h
 
 **Layout notes:** brand-first steel header with CloudLedger mark + wordmark; auth as a composed panel; expense create as a dense toolbar; monthly summary as a serrated thermal-receipt strip; dense expense table with mono amounts. Motion is CSS-only (app fade-in, seal in, header underline grow, button press scale, row hover slide).
 
-**Live URL:** https://cloudledger-coral.vercel.app
+**Live URL:** https://cloudledger-coral.vercel.app — **Vercel hosts the static demo UI only.** The API, Postgres, and MinIO run locally (`npm run dev` + Docker Compose). There is no serverless/API proxy on Vercel.
 
 ---
 
@@ -388,7 +390,7 @@ There is **no** `POST /api/receipts/upload-url` in MVP.
 ### Prerequisites
 
 - Node.js ≥ 18
-- Docker (for local Postgres + MinIO)
+- Docker (for local Postgres; MinIO is optional)
 - AWS CLI + Terraform **only if** you apply the optional AWS stack
 - A billing alarm before any `terraform apply`
 
@@ -399,7 +401,10 @@ You do **not** need an AWS paid plan, ECS, ALB, or RDS for the MVP.
 ```bash
 git clone https://github.com/Pmvita/CloudLedger.git
 cd CloudLedger
+# Postgres only (default) — enough for migrate/seed + API smoke without receipt upload
 docker compose up -d
+# Optional receipts (needs registry access to pull MinIO):
+# docker compose --profile minio up -d
 cp .env.example .env
 npm install
 npm run db:migrate
@@ -409,7 +414,9 @@ npm run dev
 
 Open **http://localhost:4000** — Express serves `public/index.html` next to the API. Seeded login: `demo@cloudledger.dev` / `Password123!`.
 
-Keep `S3_ENDPOINT` pointed at MinIO. Do not set real AWS keys for the free build.
+**MinIO / receipts:** default Compose starts **Postgres only**. If Docker Hub/Quay deny `minio/minio` pulls, skip the `minio` profile — auth, expenses, categories, and status PATCH still work; receipt upload needs MinIO (or real S3). With MinIO up, keep `S3_ENDPOINT` pointed at it. Do not set real AWS keys for the free build.
+
+**Vercel** (`https://cloudledger-coral.vercel.app`) = **static demo UI only**. The API runs locally.
 
 ### Manual QA checklist
 
@@ -449,13 +456,16 @@ On the paid stack, AWS access keys are **not** passed into the container. The ta
 
 ## ☁️ Deployment
 
-**Free build:** there is nothing to deploy to AWS. `npm run dev` is the product.
+**Free build:** there is nothing to deploy to AWS. `npm run dev` is the product. The Vercel URL is a **static demo shell** — it does not run the Node API.
 
-**Optional $0 Terraform** (`enable_paid_stack = false`, the default):
+**Optional $0 Terraform** (`enable_paid_stack = false`, the default) — code is ready; **apply only with AWS credentials + a $5 budget alert first**:
 
 1. Copy `infra/terraform/terraform.tfvars.example` to `terraform.tfvars` and set `budget_email`.
 2. Confirm `enable_paid_stack = false`.
-3. `terraform apply` creates VPC, S3, IAM receipts policy, SSM `JWT_SECRET`, S3 gateway endpoint, and a $5 budget.
+3. `cd infra/terraform && terraform init && terraform plan && terraform apply` creates VPC, S3, IAM receipts policy, SSM `JWT_SECRET`, S3 gateway endpoint, and a $5 budget.
+4. Tear down when done: `terraform destroy`.
+
+**Status (2026-11-08):** local free path is the portfolio deliverable. Optional free Terraform is **not applied** until credentials exist. Paid stack stays off.
 
 **Paid stack** (will bill — not the free build):
 
